@@ -3,12 +3,17 @@ require 'json'
 require 'digest/sha2'
 require 'dotenv'
 
+# Setting the encoding
+Encoding.default_external = Encoding::UTF_8
+Encoding.default_internal = Encoding::UTF_8
+
 class TravisHookAPI < Sinatra::Base
   set :token, ENV['TRAVIS_USER_TOKEN']
   Dotenv.load
-  # Setting the encoding
-  Encoding.default_external = Encoding::UTF_8
-  Encoding.default_internal = Encoding::UTF_8
+
+  get '/' do
+    'Hello World'
+  end
 
   post '/' do
     if not valid_request?
