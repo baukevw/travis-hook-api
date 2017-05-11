@@ -8,4 +8,4 @@ end
 gem 'sinatra'
 gem 'json'
 gem 'dotenv'
-gem 'sinatra-logger'
+gem 'sinatra-logger', :git => 'https://github.com/minodes/sinatra-logger'
