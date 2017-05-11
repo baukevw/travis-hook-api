@@ -46,7 +46,6 @@ class TravisHookAPI < Sinatra::Base
     else
       payload = JSON.parse(params[:payload])
       LOGGER.info("Received valid payload for repository #{repo_slug}")
-      LOGGER.info(payload)
     end
   end
 
@@ -56,25 +55,11 @@ class TravisHookAPI < Sinatra::Base
     signature    = request.env["HTTP_SIGNATURE"]
     json_payload = params.fetch('payload', '')
 
-    begin
-      if public_key.verify(
-          OpenSSL::Digest::SHA1.new,
-          Base64.decode64(signature),
-          json_payload
-        )
-        status 200
-        "verification succeeded"
-      else
-        status 400
-        "verification failed"
-      end
-    rescue => e
-      logger.info "exception=#{e.class} message=\"#{e.message}\""
-      logger.debug e.backtrace.join("\n")
-
-      status 500
-      "exception encountered while verifying signature"
-    end
+    public_key.verify(
+      OpenSSL::Digest::SHA1.new,
+      Base64.decode64(signature),
+      json_payload
+    )
   end
 
   def public_key
@@ -82,5 +67,9 @@ class TravisHookAPI < Sinatra::Base
     OpenSSL::PKey::RSA.new(
       config['config']['notifications']['webhook']['public_key']
     )
+  end
+
+  def repo_slug
+    env['HTTP_TRAVIS_REPO_SLUG']
   end
 end
