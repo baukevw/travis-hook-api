@@ -35,6 +35,7 @@ class TravisHookAPI < Sinatra::Base
   end
 
   post '/' do
+    LOGGER.info(request.inspect)
     if not valid_request?
       LOGGER.info("Invalid payload request for repository #{repo_slug}")
     else
