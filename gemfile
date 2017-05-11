@@ -8,4 +8,3 @@ end
 gem 'sinatra'
 gem 'json'
 gem 'dotenv'
-gem 'sinatra-logger'
