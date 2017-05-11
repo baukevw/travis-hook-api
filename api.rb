@@ -4,6 +4,10 @@ require 'digest/sha2'
 require 'dotenv'
 require 'logger'
 
+require 'base64'
+require 'open-uri'
+require 'openssl'
+
 # Setting the encoding
 Encoding.default_external = Encoding::UTF_8
 Encoding.default_internal = Encoding::UTF_8
@@ -15,6 +19,7 @@ LOGGER = Logger.new(FILE)
 
 class TravisHookAPI < Sinatra::Base
   set :token, ENV['TRAVIS_USER_TOKEN']
+  TRAVIS_CONFIG_URL = 'https://api.travis-ci.org/config'.freeze
   Dotenv.load
 
   configure do
@@ -45,16 +50,37 @@ class TravisHookAPI < Sinatra::Base
     end
   end
 
+  private
+
   def valid_request?
-    digest = Digest::SHA2.new.update("#{repo_slug}#{settings.token}")
-    digest.to_s == authorization
+    signature    = request.env["HTTP_SIGNATURE"]
+    json_payload = params.fetch('payload', '')
+
+    begin
+      if public_key.verify(
+          OpenSSL::Digest::SHA1.new,
+          Base64.decode64(signature),
+          json_payload
+        )
+        status 200
+        "verification succeeded"
+      else
+        status 400
+        "verification failed"
+      end
+    rescue => e
+      logger.info "exception=#{e.class} message=\"#{e.message}\""
+      logger.debug e.backtrace.join("\n")
+
+      status 500
+      "exception encountered while verifying signature"
+    end
   end
 
-  def authorization
-    env['HTTP_AUTHORIZATION']
-  end
-
-  def repo_slug
-    env['HTTP_TRAVIS_REPO_SLUG']
+  def public_key
+    config = JSON.parse(open(TRAVIS_CONFIG_URL).read)
+    OpenSSL::PKey::RSA.new(
+      config['config']['notifications']['webhook']['public_key']
+    )
   end
 end
