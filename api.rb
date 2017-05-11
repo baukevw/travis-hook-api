@@ -2,35 +2,30 @@ require 'sinatra'
 require 'json'
 require 'digest/sha2'
 require 'dotenv'
+require 'sinatra/logger'
 
 # Setting the encoding
 Encoding.default_external = Encoding::UTF_8
 Encoding.default_internal = Encoding::UTF_8
 
+
 class TravisHookAPI < Sinatra::Base
   set :token, ENV['TRAVIS_USER_TOKEN']
+  logger filename: "log/#{settings.environment}.log", level: :trace
   Dotenv.load
 
-  configure do
-    enable :logging
-    file = File.new("#{settings.root}/log/#{settings.environment}.log", 'a+')
-    file.sync = true
-    use Rack::CommonLogger, file
-  end
-
-
   get '/' do
-    puts 'Femke'
+    logger.info("Hello World.")
     'Hello World'
   end
 
   post '/' do
     if not valid_request?
-      puts "Invalid payload request for repository #{repo_slug}"
+      logger.info("Invalid payload request for repository #{repo_slug}")
     else
       payload = JSON.parse(params[:payload])
-      puts "Received valid payload for repository #{repo_slug}"
-      puts payload
+      logger.info("Received valid payload for repository #{repo_slug}")
+      logger.info(payload)
     end
   end
 

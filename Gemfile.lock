@@ -1,17 +1,23 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    concurrent-ruby (1.0.5)
     dotenv (2.2.1)
     json (2.1.0)
     mustermann (1.0.0)
     rack (2.0.2)
     rack-protection (2.0.0)
       rack
+    semantic_logger (4.1.0)
+      concurrent-ruby (~> 1.0)
     sinatra (2.0.0)
       mustermann (~> 1.0)
       rack (~> 2.0)
       rack-protection (= 2.0.0)
       tilt (~> 2.0)
+    sinatra-logger (0.3.2)
+      semantic_logger
+      sinatra
     tilt (2.0.7)
 
 PLATFORMS
@@ -21,6 +27,7 @@ DEPENDENCIES
   dotenv
   json
   sinatra
+  sinatra-logger
 
 BUNDLED WITH
    1.14.6
