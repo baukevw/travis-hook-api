@@ -40,12 +40,12 @@ class TravisHookAPI < Sinatra::Base
   end
 
   post '/' do
-    LOGGER.info(request.inspect)
     if not valid_request?
       LOGGER.info("Invalid payload request for repository #{repo_slug}")
     else
       payload = JSON.parse(params[:payload])
       LOGGER.info("Received valid payload for repository #{repo_slug}")
+      LOGGER.info("Build status message: #{payload['status_message']}")
     end
   end
 
