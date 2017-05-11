@@ -11,7 +11,16 @@ class TravisHookAPI < Sinatra::Base
   set :token, ENV['TRAVIS_USER_TOKEN']
   Dotenv.load
 
+  configure do
+    enable :logging
+    file = File.new("#{settings.root}/log/#{settings.environment}.log", 'a+')
+    file.sync = true
+    use Rack::CommonLogger, file
+  end
+
+
   get '/' do
+    puts 'Femke'
     'Hello World'
   end
 
@@ -21,6 +30,7 @@ class TravisHookAPI < Sinatra::Base
     else
       payload = JSON.parse(params[:payload])
       puts "Received valid payload for repository #{repo_slug}"
+      puts payload
     end
   end
 
