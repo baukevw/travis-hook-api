@@ -52,11 +52,12 @@ class TravisHookAPI < Sinatra::Base
           "http://pc.bauke.me/api/change",
           query: { "pin_number" => '0', "action" => "off" }
         )
-      elsif %w(Broken Failed Still Failing).include? status_message
+      if %w(Broken Failed Still Failing).include? status_message
         HTTParty.post(
           "http://pc.bauke.me/api/change",
           query: { "pin_number" => '0', "action" => "on" }
         )
+      end
     end
   end
 
