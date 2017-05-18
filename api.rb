@@ -47,14 +47,14 @@ class TravisHookAPI < Sinatra::Base
       payload = JSON.parse(params[:payload])
       LOGGER.info("Received valid payload for repository #{repo_slug}")
       LOGGER.info("Build status message: #{payload['status_message']}")
-      if %w(Fixed Passed).include? status_message
+      if status_message.to_s == "Fixed" || status_message.to_s == "Passed"
         LOGGER.info("Fixed Passed")
         return if HTTParty.post(
           "http://pc.bauke.me/api/change",
           query: { "pin_number" => '0', "action" => "off" }
         )
       end
-      if %w(Broken Failed Still Failing).include? status_message
+      if status_message.to_s == "Broken" || status_message.to_s == "Failed" || status_message.to_s == "Still Failing"
         LOGGER.info("Broken Failed Still Failing")
         return if HTTParty.post(
           "http://pc.bauke.me/api/change",
