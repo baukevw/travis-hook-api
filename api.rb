@@ -7,6 +7,7 @@ require 'logger'
 require 'base64'
 require 'open-uri'
 require 'openssl'
+require 'httparty'
 
 # Setting the encoding
 Encoding.default_external = Encoding::UTF_8
@@ -46,6 +47,16 @@ class TravisHookAPI < Sinatra::Base
       payload = JSON.parse(params[:payload])
       LOGGER.info("Received valid payload for repository #{repo_slug}")
       LOGGER.info("Build status message: #{payload['status_message']}")
+      if %w(Fixed Passed).include? status_message
+        HTTParty.post(
+          "http://pc.bauke.me/api/change",
+          query: { "pin_number" => '0', "action" => "off" }
+        )
+      elsif %w(Broken Failed Still Failing).include? status_message
+        HTTParty.post(
+          "http://pc.bauke.me/api/change",
+          query: { "pin_number" => '0', "action" => "on" }
+        )
     end
   end
 
