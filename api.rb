@@ -50,14 +50,14 @@ class TravisHookAPI < Sinatra::Base
       if status_message.to_s == "Fixed" || status_message.to_s == "Passed"
         LOGGER.info("Fixed Passed")
         return if HTTParty.post(
-          "http://pc.bauke.me/api/change",
+          "http://pc.bauke.me:9292/api/change",
           query: { "pin_number" => '0', "action" => "off" }
         )
       end
       if status_message.to_s == "Broken" || status_message.to_s == "Failed" || status_message.to_s == "Still Failing"
         LOGGER.info("Broken Failed Still Failing")
         return if HTTParty.post(
-          "http://pc.bauke.me/api/change",
+          "http://pc.bauke.me:9292/api/change",
           query: { "pin_number" => '0', "action" => "on" }
         )
       end
