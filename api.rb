@@ -47,6 +47,7 @@ class TravisHookAPI < Sinatra::Base
       payload = JSON.parse(params[:payload])
       LOGGER.info("Received valid payload for repository #{repo_slug}")
       LOGGER.info("Build status message: #{payload['status_message']}")
+      LOGGER.info("Build status number: #{payload['status']}")
       status_message = payload['status_message'].to_s
       if status_message == "Fixed" || status_message == "Passed"
         LOGGER.info("Fixed Passed")
