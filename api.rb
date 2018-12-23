@@ -52,14 +52,14 @@ class TravisHookAPI < Sinatra::Base
       if status_message == "Fixed" || status_message == "Passed"
         LOGGER.info("Fixed Passed")
         return if HTTParty.post(
-          "http://pc.bauke.me:9292/api/change/",
+          ENV["RPI_RELAY_API_CHANGE_URL"],
           { :body =>  { "pin_number" => '0', "action" => "off" }}
         )
       end
       if status_message == "Broken" || status_message == "Failed" || status_message == "Still Failing"
         LOGGER.info("Broken Failed Still Failing")
         return if HTTParty.post(
-          "http://pc.bauke.me:9292/api/change/",
+          ENV["RPI_RELAY_API_CHANGE_URL"],
           { :body => {"pin_number" => '0', "action" => "on" }}
         )
       end
